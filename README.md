@@ -29,8 +29,18 @@ to see the available tasks.
 
 To start working on the Agent, you can build the `master` branch:
 
-1. checkout the repo: `git clone https://github.com/DataDog/datadog-agent.git $GOPATH/src/github.com/DataDog/datadog-agent`.
-2. cd into the project folder: `cd $GOPATH/src/github.com/DataDog/datadog-agent`.
+1. checkout the repo: 
+
+   ```
+   git clone https://github.com/DataDog/datadog-agent.git $GOPATH/src/github.com/DataDog/datadog-agent
+   ```
+   
+2. cd into the project folder: 
+
+   ```
+   cd $GOPATH/src/github.com/DataDog/datadog-agent
+   ```
+
 3. install project's dependencies: `invoke deps`.
    Make sure that `$GOPATH/bin` is in your `$PATH` otherwise this step might fail.
 4. build the whole project with `invoke agent.build --build-exclude=snmp,systemd`
