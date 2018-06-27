@@ -403,8 +403,7 @@ deploy_deb_testing:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -431,8 +430,7 @@ deploy_rpm_testing:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -451,8 +449,7 @@ deploy_suse_rpm_testing:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR_SUSE
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -471,8 +468,7 @@ deploy_windows_testing:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR_SUSE
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - $S3_CP_CMD --recursive --exclude "*" --include "*.msi" $OMNIBUS_PACKAGE_DIR s3://$WINDOWS_TESTING_S3_BUCKET/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers full=id=3a6e02b08553fd157ae3fb918945dd1eaae5a1aa818940381ef07a430cf25732
@@ -737,7 +733,10 @@ dev_branch_docker_hub:
 dev_master_docker_hub:
   <<: *docker_tag_job_definition
   only:
-    - master
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION == "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -758,7 +757,10 @@ dca_dev_branch_docker_hub:
 dca_dev_master_docker_hub:
   <<: *docker_tag_job_definition
   only:
-    - master
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION == "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -770,7 +772,10 @@ dca_dev_master_docker_hub:
 dev_master_quay:
   <<: *docker_tag_job_definition
   only:
-    - master
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION == "nightly"
   variables:
     <<: *quay_variables
   script:
@@ -790,8 +795,7 @@ deploy_deb:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -821,7 +825,10 @@ deploy_windows_master:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION == "nightly"
   tags: [ "runner:main", "size:large" ]
   script:
     - $S3_CP_CMD --recursive --exclude "*" --include "*.msi" $OMNIBUS_PACKAGE_DIR s3://$WINDOWS_BUILDS_S3_BUCKET/master/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers full=id=3a6e02b08553fd157ae3fb918945dd1eaae5a1aa818940381ef07a430cf25732
@@ -834,7 +841,10 @@ deploy_windows_tags:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   tags: [ "runner:main", "size:large" ]
   script:
     - $S3_CP_CMD --recursive --exclude "*" --include "*.msi" $OMNIBUS_PACKAGE_DIR s3://$WINDOWS_BUILDS_S3_BUCKET/tagged/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers full=id=3a6e02b08553fd157ae3fb918945dd1eaae5a1aa818940381ef07a430cf25732
@@ -847,8 +857,7 @@ deploy_rpm:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -871,8 +880,7 @@ deploy_suse_rpm:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR_SUSE
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - source /usr/local/rvm/scripts/rvm
@@ -894,8 +902,7 @@ deploy_dsd:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - $S3_CP_CMD $S3_ARTEFACTS_URI/dogstatsd/dogstatsd ./dogstatsd
@@ -909,8 +916,7 @@ deploy_puppy:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - $S3_CP_CMD $S3_ARTEFACTS_URI/puppy/agent ./agent
@@ -926,7 +932,10 @@ tag_release:
   stage: deploy
   when: manual
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -939,7 +948,10 @@ latest_release:
   stage: deploy
   when: manual
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -952,7 +964,10 @@ dca_tag_release:
   stage: deploy
   when: manual
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -964,7 +979,10 @@ dca_latest_release:
   stage: deploy
   when: manual
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   variables:
     <<: *docker_hub_variables
   script:
@@ -977,8 +995,7 @@ deploy_cloudfront_invalidate:
   before_script:
     - ls $OMNIBUS_PACKAGE_DIR
   only:
-    - master
-    - tags
+    - triggers
   tags: [ "runner:main", "size:large" ]
   script:
     - cd /deploy_scripts/cloudfront-invalidation
@@ -1007,14 +1024,20 @@ pupernetes-dev:
 pupernetes-master:
   <<: *pupernetes_template
   only:
-    - master
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION == "nightly"
   script:
   - inv -e e2e-tests --image=datadog/agent-dev:master
 
 pupernetes-tags:
   <<: *pupernetes_template
   only:
-    - tags
+    refs:
+      - triggers
+    variables:
+      - $AGENT_VERSION != "nightly"
   script:
   # note: it's not the agent-dev
   - inv -e e2e-tests --image=datadog/agent:$CI_COMMIT_TAG
